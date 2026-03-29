@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Assistant</title>
+</head>
+<body>
+    <h1>My AI Assistant</h1>
+
+    <form id="chat-form">
+        <input type="text" id="message" placeholder="Ask something..." required>
+        <button type="submit">Send</button>
+    </form>
+
+    <p><b>Response:</b></p>
+    <div id="response"></div>
+
+    <script>
+        const form = document.getElementById("chat-form");
+
+        form.onsubmit = async (e) => {
+            e.preventDefault();
+
+            const message = document.getElementById("message").value;
+
+            const res = await fetch("/chat", {
+                method: "POST",
+                headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                body: "message=" + encodeURIComponent(message)
+            });
+
+            const text = await res.text();
+            document.getElementById("response").innerText = text;
+        };
+    </script>
+</body>
+</html>
