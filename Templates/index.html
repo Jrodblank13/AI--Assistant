@@ -1,112 +1,29 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>ChatGPT Clone</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: Arial;
-      background: #0d0d0d;
-      color: white;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: auto;
-      padding: 20px;
-    }
-
-    .chat {
-      height: 80vh;
-      overflow-y: auto;
-    }
-
-    .msg {
-      padding: 12px;
-      margin: 10px 0;
-      border-radius: 10px;
-      max-width: 80%;
-    }
-
-    .user {
-      background: #2b2b2b;
-      margin-left: auto;
-      text-align: right;
-    }
-
-    .bot {
-      background: #444;
-    }
-
-    .input-box {
-      display: flex;
-      margin-top: 10px;
-    }
-
-    input {
-      flex: 1;
-      padding: 12px;
-      border-radius: 8px;
-      border: none;
-    }
-
-    button {
-      margin-left: 10px;
-      padding: 12px;
-      background: #10a37f;
-      border: none;
-      color: white;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-  </style>
+    <title>AI Assistant</title>
 </head>
-
 <body>
-<div class="container">
-  <div class="chat" id="chat"></div>
+    <h1>AI Assistant is Running 🤖</h1>
 
-  <div class="input-box">
-    <input id="input" placeholder="Message ChatGPT...">
+    <input id="msg" placeholder="Type message">
     <button onclick="send()">Send</button>
-  </div>
-</div>
 
-<script>
-async function send() {
-  const input = document.getElementById("input");
-  const chat = document.getElementById("chat");
+    <p id="response"></p>
 
-  const msg = input.value;
-  if (!msg) return;
+    <script>
+        async function send() {
+            const message = document.getElementById("msg").value;
 
-  chat.innerHTML += `<div class="msg user">${msg}</div>`;
-  input.value = "";
+            const res = await fetch("/chat", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ message })
+            });
 
-  const res = await fetch("/chat", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ message: msg })
-  });
-
-  const reader = res.body.getReader();
-  const decoder = new TextDecoder();
-
-  let botDiv = document.createElement("div");
-  botDiv.className = "msg bot";
-  chat.appendChild(botDiv);
-
-  let text = "";
-
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) break;
-
-    text += decoder.decode(value);
-    botDiv.innerText = text;
-    chat.scrollTop = chat.scrollHeight;
-  }
-}
-</script>
+            const data = await res.json();
+            document.getElementById("response").innerText = data.response;
+        }
+    </script>
 </body>
 </html>
